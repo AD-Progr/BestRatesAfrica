@@ -24,46 +24,46 @@ export default function RateChart({ from, to, amount }: RateChartProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'1h' | '6h' | '24h'>('6h');
 
-  // Simulation de données historiques réalistes
-  const generateHistoricalData = () => {
-    const now = new Date();
-    const data: RateData[] = [];
-    const periods = timeRange === '1h' ? 12 : timeRange === '6h' ? 36 : 144; // Points de données
-    const intervalMinutes = timeRange === '1h' ? 5 : timeRange === '6h' ? 10 : 10;
-
-    // Taux de base réalistes
-    const baseRates = {
-      Wise: 655.50,
-      Remitly: 652.80,
-      WorldRemit: 650.15,
-      Sendwave: 648.90
-    };
-
-    for (let i = periods - 1; i >= 0; i--) {
-      const timestamp = new Date(now.getTime() - i * intervalMinutes * 60 * 1000);
-      
-      // Génération de variations réalistes (tendances + bruit)
-      const timeProgress = (periods - 1 - i) / periods;
-      const trendFactor = Math.sin(timeProgress * Math.PI * 2) * 2; // Tendance cyclique
-      
-      data.push({
-        timestamp: timestamp.toISOString(),
-        time: timestamp.toLocaleTimeString('fr-FR', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        }),
-        Wise: parseFloat((baseRates.Wise + trendFactor + (Math.random() - 0.5) * 1.5).toFixed(2)),
-        Remitly: parseFloat((baseRates.Remitly + trendFactor * 0.8 + (Math.random() - 0.5) * 2).toFixed(2)),
-        WorldRemit: parseFloat((baseRates.WorldRemit + trendFactor * 0.6 + (Math.random() - 0.5) * 2.5).toFixed(2)),
-        Sendwave: parseFloat((baseRates.Sendwave + trendFactor * 0.4 + (Math.random() - 0.5) * 1).toFixed(2))
-      });
-    }
-
-    return data;
-  };
-
   useEffect(() => {
     setIsLoading(true);
+    
+    // Génération de données historiques réalistes
+    const generateHistoricalData = () => {
+      const now = new Date();
+      const data: RateData[] = [];
+      const periods = timeRange === '1h' ? 12 : timeRange === '6h' ? 36 : 144; // Points de données
+      const intervalMinutes = timeRange === '1h' ? 5 : timeRange === '6h' ? 10 : 10;
+
+      // Taux de base réalistes
+      const baseRates = {
+        Wise: 655.50,
+        Remitly: 652.80,
+        WorldRemit: 650.15,
+        Sendwave: 648.90
+      };
+
+      for (let i = periods - 1; i >= 0; i--) {
+        const timestamp = new Date(now.getTime() - i * intervalMinutes * 60 * 1000);
+        
+        // Génération de variations réalistes (tendances + bruit)
+        const timeProgress = (periods - 1 - i) / periods;
+        const trendFactor = Math.sin(timeProgress * Math.PI * 2) * 2; // Tendance cyclique
+        
+        data.push({
+          timestamp: timestamp.toISOString(),
+          time: timestamp.toLocaleTimeString('fr-FR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }),
+          Wise: parseFloat((baseRates.Wise + trendFactor + (Math.random() - 0.5) * 1.5).toFixed(2)),
+          Remitly: parseFloat((baseRates.Remitly + trendFactor * 0.8 + (Math.random() - 0.5) * 2).toFixed(2)),
+          WorldRemit: parseFloat((baseRates.WorldRemit + trendFactor * 0.6 + (Math.random() - 0.5) * 2.5).toFixed(2)),
+          Sendwave: parseFloat((baseRates.Sendwave + trendFactor * 0.4 + (Math.random() - 0.5) * 1).toFixed(2))
+        });
+      }
+
+      return data;
+    };
     
     // Simulation du chargement des données
     setTimeout(() => {
@@ -92,13 +92,21 @@ export default function RateChart({ from, to, amount }: RateChartProps) {
 
   const stats = getStats();
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: {
+    active?: boolean;
+    payload?: Array<{
+      color: string;
+      dataKey: string;
+      value: number;
+    }>;
+    label?: string;
+  }) => {
     if (!active || !payload || !payload.length) return null;
 
     return (
       <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-medium text-gray-800 mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <div key={index} className="flex items-center space-x-2">
             <div 
               className="w-3 h-3 rounded-full" 
