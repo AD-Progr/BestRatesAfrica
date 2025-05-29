@@ -18,6 +18,7 @@ export default function AdminDashboard() {
   // Simulation des données (remplacez par vos vraies données Analytics)
   useEffect(() => {
     const loadMetrics = () => {
+      // Ici vous intégrerez les vraies données Google Analytics
       setMetrics({
         dailyVisitors: Math.floor(Math.random() * 150) + 50,
         totalClicks: Math.floor(Math.random() * 25) + 8,
@@ -183,7 +184,7 @@ export default function AdminDashboard() {
               <h3 className="font-semibold text-blue-900 mb-2">📊 Google Analytics</h3>
               <p className="text-blue-700 text-sm mb-3">Consultez vos stats détaillées</p>
               <a 
-                href="https://analytics.google.com"
+                href={`https://analytics.google.com/analytics/web/#/p${process.env.NEXT_PUBLIC_GA_ID?.replace('G-', '')}/reports/intelligenthome`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors inline-block"
@@ -208,102 +209,17 @@ export default function AdminDashboard() {
             <div className="bg-purple-50 p-4 rounded-lg hover:bg-purple-100 transition-colors">
               <h3 className="font-semibold text-purple-900 mb-2">📱 Réseaux Sociaux</h3>
               <p className="text-purple-700 text-sm mb-3">Partagez vos contenus</p>
-              <a 
-                href="https://www.linkedin.com/feed/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-purple-600 text-white px-4 py-2 rounded text-sm hover:bg-purple-700 transition-colors inline-block"
-              >
-                Poster LinkedIn
-              </a>
+              <button className="bg-purple-600 text-white px-4 py-2 rounded text-sm hover:bg-purple-700 transition-colors">
+                Créer post
+              </button>
             </div>
             
             <div className="bg-orange-50 p-4 rounded-lg hover:bg-orange-100 transition-colors">
               <h3 className="font-semibold text-orange-900 mb-2">✍️ Nouveau contenu</h3>
-              <p className="text-orange-700 text-sm mb-3">Créez du contenu SEO</p>
-              <a 
-                href="https://www.linkedin.com/in/me/recent-activity/articles/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-orange-600 text-white px-4 py-2 rounded text-sm hover:bg-orange-700 transition-colors inline-block"
-              >
-                Écrire sur LinkedIn
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* 📝 CONTENT MARKETING TOOLKIT */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📝 Content Marketing Toolkit</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">🎯 Articles LinkedIn</h3>
-              <p className="text-blue-700 text-sm mb-3">Publications longues optimisées</p>
-              <div className="space-y-2">
-                <a 
-                  href="https://www.linkedin.com/pulse/topics/home/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-blue-600 text-white px-3 py-2 rounded text-xs hover:bg-blue-700 transition-colors text-center"
-                >
-                  Créer Article LinkedIn
-                </a>
-                <a 
-                  href="https://medium.com/new-story"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-gray-700 text-white px-3 py-2 rounded text-xs hover:bg-gray-800 transition-colors text-center"
-                >
-                  Publier sur Medium
-                </a>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
-              <h3 className="font-semibold text-green-900 mb-2">📱 Posts Sociaux</h3>
-              <p className="text-green-700 text-sm mb-3">Contenu viral et engagement</p>
-              <div className="space-y-2">
-                <a 
-                  href="https://www.facebook.com/groups/search/top/?q=senegalais%20france"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-blue-500 text-white px-3 py-2 rounded text-xs hover:bg-blue-600 transition-colors text-center"
-                >
-                  Groupes Facebook
-                </a>
-                <a 
-                  href="https://twitter.com/compose/tweet"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-sky-500 text-white px-3 py-2 rounded text-xs hover:bg-sky-600 transition-colors text-center"
-                >
-                  Thread Twitter
-                </a>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg">
-              <h3 className="font-semibold text-orange-900 mb-2">🎥 Contenu Vidéo</h3>
-              <p className="text-orange-700 text-sm mb-3">Tutoriels et comparaisons</p>
-              <div className="space-y-2">
-                <a 
-                  href="https://studio.youtube.com/channel/UC/videos/upload"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-red-600 text-white px-3 py-2 rounded text-xs hover:bg-red-700 transition-colors text-center"
-                >
-                  Upload YouTube
-                </a>
-                <a 
-                  href="https://www.tiktok.com/upload"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-black text-white px-3 py-2 rounded text-xs hover:bg-gray-800 transition-colors text-center"
-                >
-                  TikTok Business
-                </a>
-              </div>
+              <p className="text-orange-700 text-sm mb-3">Améliorez votre SEO</p>
+              <button className="bg-orange-600 text-white px-4 py-2 rounded text-sm hover:bg-orange-700 transition-colors">
+                Écrire article
+              </button>
             </div>
           </div>
         </div>
@@ -355,7 +271,7 @@ export default function AdminDashboard() {
                     <span className="font-medium text-gray-700">{service.name}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium bg-${service.color}-100 text-${service.color}-700`}>
                       {service.clicks} clics
                     </span>
                   </div>

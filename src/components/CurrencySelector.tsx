@@ -135,10 +135,10 @@ export default function CurrencySelector({ selectedPair, onPairChange }: Currenc
     <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
       <div className="flex items-center space-x-3 mb-4">
         <Globe className="h-6 w-6 text-blue-600" />
-        <h3 className="text-xl font-semibold text-gray-800">Corridors de transfert</h3>
+        <h3 className="text-xl font-semibold text-gray-800 corridors-title">Corridors de transfert</h3>
       </div>
 
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-600 mb-6 corridors-subtitle">
         Sélectionnez votre corridor de transfert pour comparer les meilleurs taux en temps réel.
       </p>
 
@@ -146,7 +146,7 @@ export default function CurrencySelector({ selectedPair, onPairChange }: Currenc
       <div className="mb-6">
         <div className="flex items-center space-x-2 mb-3">
           <Star className="h-4 w-4 text-yellow-500" />
-          <h4 className="font-medium text-gray-800">Corridors populaires</h4>
+          <h4 className="font-medium text-gray-800 popular-corridors-label">Corridors populaires</h4>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -222,7 +222,7 @@ export default function CurrencySelector({ selectedPair, onPairChange }: Currenc
       <div className="text-center">
         <button
           onClick={() => setShowAll(!showAll)}
-          className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+          className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors see-more-corridors"
         >
           {showAll ? 'Voir moins de corridors' : `Voir ${otherCorridors.length} autres corridors`}
         </button>
@@ -237,10 +237,10 @@ export default function CurrencySelector({ selectedPair, onPairChange }: Currenc
             {AVAILABLE_CORRIDORS.find(c => isSelected(c))?.toFlag}
           </div>
           <div>
-            <div className="font-medium text-blue-800">
+            <div className="font-medium text-blue-800 selected-corridor-label">
               Corridor sélectionné: {selectedPair.from} → {selectedPair.to}
             </div>
-            <div className="text-sm text-blue-600">
+            <div className="text-sm text-blue-600 real-time-comparison-label">
               Comparaison des taux en temps réel
             </div>
           </div>

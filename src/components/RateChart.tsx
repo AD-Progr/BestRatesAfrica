@@ -128,10 +128,10 @@ export default function RateChart({ from, to, amount }: RateChartProps) {
         <div className="flex items-center space-x-3">
           <BarChart3 className="h-6 w-6 text-blue-600" />
           <div>
-            <h3 className="text-xl font-semibold text-gray-800">
+            <h3 className="text-xl font-semibold text-gray-800 rate-evolution-title">
               Évolution des taux {from}→{to}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 real-time-tracking-label" data-amount={amount} data-currency={from}>
               Suivi en temps réel pour {amount.toLocaleString()} {from}
             </p>
           </div>
@@ -252,11 +252,11 @@ export default function RateChart({ from, to, amount }: RateChartProps) {
 
       {/* Légende */}
       <div className="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-600">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 updated-every-10min">
           <Clock className="h-4 w-4" />
           <span>Mise à jour toutes les {timeRange === '1h' ? '5' : '10'} minutes</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 increase-is-better">
           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           <span>Hausse = Meilleur pour vous</span>
         </div>

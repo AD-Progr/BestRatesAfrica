@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import sgMail from '@sendgrid/mail';
+
+// Configuration SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 // Types pour les alertes
 interface AlertRequest {
@@ -64,18 +68,215 @@ export async function POST(request: NextRequest) {
     // Ajout à la base de données
     alertsDatabase.push(newAlert);
 
-    // Simulation d'envoi d'email (logs pour le développement)
-    console.log('📧 SIMULATION EMAIL DE CONFIRMATION:');
-    console.log('   Destinataire:', email);
-    console.log('   Sujet: 🔔 Alerte BestRates Africa créée avec succès');
-    console.log('   Contenu: Alerte pour', amount, from, '→', to, 'à', targetRate, to);
-    console.log('   ID Alerte:', alertId);
-    console.log('   Statut: Email simulé envoyé avec succès');
+    // Envoi de l'email de confirmation avec SendGrid
+    console.log('📧 Envoi email de confirmation SendGrid...');
+    
+    const confirmationEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Alerte créée - BestRatesAfrica</title>
+        <style>
+          body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f8f9fa; 
+          }
+          .container { max-width: 600px; margin: 0 auto; background: white; }
+          .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+          }
+          .header h1 { margin: 0; font-size: 28px; }
+          .header p { margin: 10px 0 0; opacity: 0.9; }
+          .content { padding: 30px; }
+          .alert-box { 
+            background: #d4edda; 
+            border: 1px solid #c3e6cb; 
+            border-left: 4px solid #28a745; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+          }
+          .alert-box h2 { color: #155724; margin-top: 0; }
+          .details { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 20px 0; 
+          }
+          .details h3 { color: #495057; margin-top: 0; }
+          .details ul { padding-left: 20px; }
+          .details li { margin: 8px 0; }
+          .button { 
+            display: inline-block; 
+            background: #007bff; 
+            color: white; 
+            padding: 15px 25px; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin: 10px 5px;
+            font-weight: bold;
+          }
+          .button:hover { background: #0056b3; }
+          .footer { 
+            text-align: center; 
+            padding: 30px; 
+            background: #f8f9fa; 
+            color: #6c757d; 
+            font-size: 14px; 
+          }
+          .footer a { color: #007bff; text-decoration: none; }
+          .info-box {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+          }
+          .info-box h4 { color: #1976d2; margin-top: 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔔 Alerte créée avec succès !</h1>
+            <p>BestRatesAfrica - Votre comparateur de taux</p>
+          </div>
+          
+          <div class="content">
+            <div class="alert-box">
+              <h2>✅ Votre alerte est maintenant active</h2>
+              <p>Nous surveillons les taux en continu et vous préviendrons dès qu'une opportunité correspondant à vos critères sera disponible.</p>
+            </div>
+            
+            <div class="details">
+              <h3>📋 Détails de votre alerte :</h3>
+              <ul>
+                <li><strong>Corridor :</strong> ${from} → ${to}</li>
+                <li><strong>Montant :</strong> ${amount} ${from}</li>
+                <li><strong>Taux cible :</strong> ${targetRate} ${to} ou mieux</li>
+                <li><strong>Service préféré :</strong> ${service || 'Tous les services'}</li>
+                <li><strong>Email :</strong> ${email}</li>
+                <li><strong>ID Alerte :</strong> ${alertId}</li>
+              </ul>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="https://bestratesafrica.com/home" class="button">
+                🏠 Retourner au site
+              </a>
+            </div>
+            
+            <div class="info-box">
+              <h4>💡 Comment ça marche ?</h4>
+              <ol>
+                <li>Nous surveillons les taux de change en continu sur tous les services</li>
+                <li>Dès qu'un taux atteint ou dépasse votre objectif, nous vous envoyons un email immédiatement</li>
+                <li>Vous avez alors quelques heures pour profiter du taux avantageux</li>
+                <li>L'alerte reste active jusqu'à ce que vous la désactiviez</li>
+              </ol>
+            </div>
+            
+            <div class="info-box">
+              <h4>🎯 Prochaines étapes :</h4>
+              <p>Gardez un œil sur votre boîte email ! Nous vous enverrons une notification dès qu'un taux exceptionnel sera disponible pour votre corridor <strong>${from} → ${to}</strong>.</p>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p><strong>BestRatesAfrica</strong> - Votre comparateur de taux de référence</p>
+            <p>Cet email a été envoyé à <strong>${email}</strong></p>
+            <p>
+              <a href="mailto:support@bestratesafrica.com">Nous contacter</a> | 
+              <a href="https://bestratesafrica.com">Visiter le site</a>
+            </p>
+            <p style="font-size: 12px; margin-top: 20px;">
+              Pour vous désabonner de cette alerte, 
+              <a href="mailto:support@bestratesafrica.com?subject=Désabonnement%20alerte%20${alertId}">cliquez ici</a>
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
 
-    // Simulation d'un petit délai pour l'envoi d'email
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Configuration de l'email
+    const msg = {
+      to: email,
+      from: {
+        email: process.env.SENDGRID_FROM_EMAIL || 'noreply@bestratesafrica.com',
+        name: 'BestRatesAfrica'
+      },
+      subject: `🔔 Alerte créée : ${from}→${to} à ${targetRate} ${to}`,
+      html: confirmationEmailHtml,
+    };
 
-    console.log(`✅ Alerte créée et email simulé envoyé: ID ${alertId}`);
+    try {
+      // Envoi de l'email via SendGrid
+      await sgMail.send(msg);
+      console.log(`✅ Email SendGrid envoyé avec succès à ${email}`);
+      
+      // Email de notification interne (optionnel)
+      const adminEmail = process.env.ADMIN_EMAIL;
+      if (adminEmail) {
+        const adminMsg = {
+          to: adminEmail,
+          from: {
+            email: process.env.SENDGRID_FROM_EMAIL || 'noreply@bestratesafrica.com',
+            name: 'BestRatesAfrica Alerts'
+          },
+          subject: `📊 Nouvelle alerte créée : ${from}→${to}`,
+          html: `
+            <h2>Nouvelle alerte créée sur BestRatesAfrica</h2>
+            <p><strong>Email :</strong> ${email}</p>
+            <p><strong>Corridor :</strong> ${from} → ${to}</p>
+            <p><strong>Montant :</strong> ${amount} ${from}</p>
+            <p><strong>Taux cible :</strong> ${targetRate} ${to}</p>
+            <p><strong>Service préféré :</strong> ${service || 'Tous'}</p>
+            <p><strong>ID Alerte :</strong> ${alertId}</p>
+            <p><strong>Créée le :</strong> ${new Date().toLocaleString('fr-FR')}</p>
+          `,
+        };
+        
+        try {
+          await sgMail.send(adminMsg);
+          console.log('📧 Notification admin envoyée');
+        } catch (adminError) {
+          console.warn('⚠️ Erreur envoi notification admin:', adminError);
+        }
+      }
+
+    } catch (emailError: any) {
+      console.error('❌ Erreur SendGrid:', emailError);
+      
+      // Si l'email échoue, on retourne quand même un succès pour l'alerte
+      // mais on informe de l'erreur email
+      return NextResponse.json({
+        success: true,
+        message: "Alerte créée avec succès, mais erreur d'envoi d'email",
+        data: {
+          alertId,
+          email,
+          targetRate,
+          service,
+          from,
+          to,
+          amount,
+          status: "active",
+          confirmationSent: false,
+          emailError: process.env.NODE_ENV === 'development' ? emailError.message : 'Erreur email'
+        }
+      });
+    }
+
+    console.log(`✅ Alerte créée et email SendGrid envoyé: ID ${alertId}`);
 
     return NextResponse.json({
       success: true,
@@ -90,7 +291,7 @@ export async function POST(request: NextRequest) {
         amount,
         status: "active",
         confirmationSent: true,
-        note: "Email de confirmation simulé (dev mode)"
+        provider: "SendGrid"
       }
     });
 
