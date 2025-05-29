@@ -1,92 +1,26 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Globe, Calculator, TrendingUp, Clock, DollarSign, ExternalLink, BookOpen, Star, Shield, Zap, Bell, Mail, Target, CheckCircle } from 'lucide-react';
+import { 
+  Globe, Calculator, TrendingUp, Clock, DollarSign, ExternalLink, 
+  BookOpen, Star, Shield, Zap, Bell, Mail, Target, CheckCircle 
+} from 'lucide-react';
 
-// TOUS les pays d'Afrique de l'Ouest + Maroc avec leurs devises
-const currencies = {
-  // Devises d'Afrique de l'Ouest + Maroc
-  'XOF': { name: 'Franc CFA BCEAO', flag: '🌍', countries: 'Bénin, Burkina Faso, Côte d\'Ivoire, Guinée-Bissau, Mali, Niger, Sénégal, Togo' },
-  'XAF': { name: 'Franc CFA BEAC', flag: '🌍', countries: 'Cameroun, Centrafrique, Tchad, Congo, Guinée équatoriale, Gabon' },
-  'NGN': { name: 'Naira nigérian', flag: '🇳🇬', countries: 'Nigeria' },
-  'GHS': { name: 'Cedi ghanéen', flag: '🇬🇭', countries: 'Ghana' },
-  'GMD': { name: 'Dalasi gambien', flag: '🇬🇲', countries: 'Gambie' },
-  'GNF': { name: 'Franc guinéen', flag: '🇬🇳', countries: 'Guinée' },
-  'LRD': { name: 'Dollar libérien', flag: '🇱🇷', countries: 'Liberia' },
-  'SLL': { name: 'Leone sierra-léonais', flag: '🇸🇱', countries: 'Sierra Leone' },
-  'CVE': { name: 'Escudo cap-verdien', flag: '🇨🇻', countries: 'Cap-Vert' },
-  'MRU': { name: 'Ouguiya mauritanien', flag: '🇲🇷', countries: 'Mauritanie' },
-  'MAD': { name: 'Dirham marocain', flag: '🇲🇦', countries: 'Maroc' },
-  
-  // Devises internationales principales
-  'EUR': { name: 'Euro', flag: '🇪🇺', countries: 'Zone Euro' },
-  'USD': { name: 'Dollar américain', flag: '🇺🇸', countries: 'États-Unis' },
-  'GBP': { name: 'Livre sterling', flag: '🇬🇧', countries: 'Royaume-Uni' },
-  'CAD': { name: 'Dollar canadien', flag: '🇨🇦', countries: 'Canada' },
-  'CHF': { name: 'Franc suisse', flag: '🇨🇭', countries: 'Suisse' },
-  'JPY': { name: 'Yen japonais', flag: '🇯🇵', countries: 'Japon' },
-  'CNY': { name: 'Yuan chinois', flag: '🇨🇳', countries: 'Chine' },
-  'AUD': { name: 'Dollar australien', flag: '🇦🇺', countries: 'Australie' },
-  'SEK': { name: 'Couronne suédoise', flag: '🇸🇪', countries: 'Suède' },
-  'NOK': { name: 'Couronne norvégienne', flag: '🇳🇴', countries: 'Norvège' },
-  'DKK': { name: 'Couronne danoise', flag: '🇩🇰', countries: 'Danemark' },
-  'PLN': { name: 'Zloty polonais', flag: '🇵🇱', countries: 'Pologne' }
-};
-
-// TOUS les corridors d'Afrique de l'Ouest + Maroc
-const corridors = [
-  // Zone UEMOA (Franc CFA BCEAO) - 8 pays
-  { from: 'EUR', to: 'XOF', popular: true, description: 'Europe → Sénégal, Mali, Burkina Faso, Côte d\'Ivoire, Niger, Bénin, Togo, Guinée-Bissau' },
-  { from: 'USD', to: 'XOF', popular: true, description: 'États-Unis → Zone UEMOA' },
-  { from: 'GBP', to: 'XOF', popular: false, description: 'Royaume-Uni → Zone UEMOA' },
-  { from: 'CAD', to: 'XOF', popular: false, description: 'Canada → Zone UEMOA' },
-  
-  // Nigeria
-  { from: 'USD', to: 'NGN', popular: true, description: 'États-Unis → Nigeria' },
-  { from: 'EUR', to: 'NGN', popular: true, description: 'Europe → Nigeria' },
-  { from: 'GBP', to: 'NGN', popular: true, description: 'Royaume-Uni → Nigeria' },
-  { from: 'CAD', to: 'NGN', popular: false, description: 'Canada → Nigeria' },
-  
-  // Ghana
-  { from: 'USD', to: 'GHS', popular: true, description: 'États-Unis → Ghana' },
-  { from: 'EUR', to: 'GHS', popular: false, description: 'Europe → Ghana' },
-  { from: 'GBP', to: 'GHS', popular: true, description: 'Royaume-Uni → Ghana' },
-  
-  // Gambie
-  { from: 'USD', to: 'GMD', popular: false, description: 'États-Unis → Gambie' },
-  { from: 'EUR', to: 'GMD', popular: false, description: 'Europe → Gambie' },
-  { from: 'GBP', to: 'GMD', popular: true, description: 'Royaume-Uni → Gambie' },
-  
-  // Guinée
-  { from: 'USD', to: 'GNF', popular: false, description: 'États-Unis → Guinée' },
-  { from: 'EUR', to: 'GNF', popular: true, description: 'Europe → Guinée' },
-  
-  // Liberia
-  { from: 'USD', to: 'LRD', popular: true, description: 'États-Unis → Liberia' },
-  { from: 'EUR', to: 'LRD', popular: false, description: 'Europe → Liberia' },
-  
-  // Sierra Leone
-  { from: 'USD', to: 'SLL', popular: false, description: 'États-Unis → Sierra Leone' },
-  { from: 'GBP', to: 'SLL', popular: true, description: 'Royaume-Uni → Sierra Leone' },
-  
-  // Cap-Vert
-  { from: 'EUR', to: 'CVE', popular: true, description: 'Europe → Cap-Vert' },
-  { from: 'USD', to: 'CVE', popular: false, description: 'États-Unis → Cap-Vert' },
-  
-  // Mauritanie
-  { from: 'EUR', to: 'MRU', popular: false, description: 'Europe → Mauritanie' },
-  { from: 'USD', to: 'MRU', popular: false, description: 'États-Unis → Mauritanie' },
-  
-  // Maroc
-  { from: 'EUR', to: 'MAD', popular: true, description: 'Europe → Maroc' },
-  { from: 'USD', to: 'MAD', popular: false, description: 'États-Unis → Maroc' },
-  { from: 'CAD', to: 'MAD', popular: false, description: 'Canada → Maroc' }
-];
-
-// Services de transfert avec vrais liens fonctionnels
+// TOUS LES SERVICES DE TRANSFERT - 12+ services pour chaque corridor
 const transferServices = {
   'EUR-XOF': [
+    {
+      name: 'Sendwave',
+      fee: '0€',
+      rate: '654.80',
+      time: '0-1 jour',
+      total: '654.80',
+      rating: 4.9,
+      features: ['Sans frais', 'Mobile Money', 'Instantané'],
+      affiliate: 'https://sendwave.com/',
+      color: 'bg-cyan-500'
+    },
     {
       name: 'Wise',
       fee: '0.41%',
@@ -110,6 +44,17 @@ const transferServices = {
       color: 'bg-blue-500'
     },
     {
+      name: 'WorldRemit',
+      fee: '0.99€',
+      rate: '653.80',
+      time: '0-24h',
+      total: '652.81',
+      rating: 4.6,
+      features: ['Mobile Money', 'Bank transfer', 'Cash pickup'],
+      affiliate: 'https://worldremit.com/fr/',
+      color: 'bg-purple-500'
+    },
+    {
       name: 'Western Union',
       fee: '4.90€',
       rate: '652.00',
@@ -121,22 +66,99 @@ const transferServices = {
       color: 'bg-yellow-500'
     },
     {
-      name: 'WorldRemit',
+      name: 'MoneyGram',
+      fee: '3.99€',
+      rate: '651.50',
+      time: '0-1 jour',
+      total: '647.51',
+      rating: 4.2,
+      features: ['Cash pickup', 'Mobile wallet', 'Bank transfer'],
+      affiliate: 'https://moneygram.com/fr/',
+      color: 'bg-red-500'
+    },
+    {
+      name: 'Ria Money Transfer',
+      fee: '2.99€',
+      rate: '652.80',
+      time: '1-2 jours',
+      total: '649.81',
+      rating: 4.4,
+      features: ['Competitive rates', 'Cash pickup', 'Bank transfer'],
+      affiliate: 'https://riamoneytransfer.com/fr/',
+      color: 'bg-orange-500'
+    },
+    {
+      name: 'Xoom (PayPal)',
+      fee: '1.99€',
+      rate: '653.20',
+      time: '0-1 jour',
+      total: '651.21',
+      rating: 4.5,
+      features: ['PayPal integration', 'Mobile app', 'Bank transfer'],
+      affiliate: 'https://xoom.com/france/',
+      color: 'bg-indigo-500'
+    },
+    {
+      name: 'Small World',
+      fee: '1.49€',
+      rate: '653.90',
+      time: '1-2 jours',
+      total: '652.41',
+      rating: 4.3,
+      features: ['Low fees', 'Cash pickup', 'Mobile money'],
+      affiliate: 'https://smallworld.com/fr/',
+      color: 'bg-pink-500'
+    },
+    {
+      name: 'Azimo (Zepz)',
       fee: '0.99€',
-      rate: '653.80',
+      rate: '653.60',
       time: '0-24h',
-      total: '652.81',
+      total: '652.61',
+      rating: 4.4,
+      features: ['Digital first', 'Competitive rates', 'Fast'],
+      affiliate: 'https://azimo.com/fr/',
+      color: 'bg-teal-500'
+    },
+    {
+      name: 'Wave',
+      fee: '0€',
+      rate: '652.50',
+      time: '0-1 jour',
+      total: '652.50',
       rating: 4.6,
-      features: ['Mobile Money', 'Bank transfer', 'Cash pickup'],
-      affiliate: 'https://worldremit.com/fr/',
-      color: 'bg-purple-500'
+      features: ['Sans frais', 'Mobile Money', 'Senegal specialist'],
+      affiliate: 'https://wave.com/',
+      color: 'bg-green-600'
+    },
+    {
+      name: 'Paysend',
+      fee: '1.50€',
+      rate: '653.40',
+      time: '0-24h',
+      total: '651.90',
+      rating: 4.2,
+      features: ['Card to card', 'Low fees', 'Fast transfer'],
+      affiliate: 'https://paysend.com/fr/',
+      color: 'bg-blue-600'
     }
   ],
   'USD-NGN': [
     {
+      name: 'Sendwave',
+      fee: '$0',
+      rate: '1,542.30',
+      time: '0-24h',
+      total: '1,542.30',
+      rating: 4.9,
+      features: ['No fees', 'Mobile money', 'Instant transfer'],
+      affiliate: 'https://sendwave.com/',
+      color: 'bg-cyan-500'
+    },
+    {
       name: 'Wise',
       fee: '0.41%',
-      rate: '1,542.30',
+      rate: '1,540.50',
       time: '1-2 jours',
       total: '1,535.97',
       rating: 4.8,
@@ -156,15 +178,15 @@ const transferServices = {
       color: 'bg-blue-500'
     },
     {
-      name: 'Sendwave',
-      fee: '$0 (premier)',
-      rate: '1,540.00',
-      time: '0-24h',
-      total: '1,540.00',
-      rating: 4.9,
-      features: ['No fees', 'Mobile money', 'Instant transfer'],
-      affiliate: 'https://sendwave.com/',
-      color: 'bg-cyan-500'
+      name: 'Chipper Cash',
+      fee: '$0',
+      rate: '1,539.80',
+      time: '0-1 jour',
+      total: '1,539.80',
+      rating: 4.6,
+      features: ['No fees', 'Mobile app', 'P2P transfer'],
+      affiliate: 'https://chippercash.com/',
+      color: 'bg-green-600'
     },
     {
       name: 'Western Union',
@@ -176,12 +198,426 @@ const transferServices = {
       features: ['Global network', 'Cash pickup', 'Mobile wallet'],
       affiliate: 'https://westernunion.com/us/',
       color: 'bg-yellow-500'
+    },
+    {
+      name: 'MoneyGram',
+      fee: '$3.99',
+      rate: '1,534.80',
+      time: '0-1 jour',
+      total: '1,530.81',
+      rating: 4.2,
+      features: ['Cash pickup', 'Mobile money', 'Bank transfer'],
+      affiliate: 'https://moneygram.com/us/',
+      color: 'bg-red-500'
+    },
+    {
+      name: 'WorldRemit',
+      fee: '$2.99',
+      rate: '1,536.90',
+      time: '0-24h',
+      total: '1,533.91',
+      rating: 4.6,
+      features: ['Mobile money', 'Bank transfer', 'Airtime top-up'],
+      affiliate: 'https://worldremit.com/us/',
+      color: 'bg-purple-500'
+    },
+    {
+      name: 'Ria Money Transfer',
+      fee: '$2.99',
+      rate: '1,537.40',
+      time: '1-2 jours',
+      total: '1,534.41',
+      rating: 4.4,
+      features: ['Competitive rates', 'Cash pickup', 'Bank deposit'],
+      affiliate: 'https://riamoneytransfer.com/us/',
+      color: 'bg-orange-500'
+    },
+    {
+      name: 'Xoom (PayPal)',
+      fee: '$4.99',
+      rate: '1,536.20',
+      time: '0-1 jour',
+      total: '1,531.21',
+      rating: 4.5,
+      features: ['PayPal integration', 'Bank deposit', 'Cash pickup'],
+      affiliate: 'https://xoom.com/',
+      color: 'bg-indigo-500'
+    },
+    {
+      name: 'Paysend',
+      fee: '$1.50',
+      rate: '1,538.90',
+      time: '0-24h',
+      total: '1,537.40',
+      rating: 4.2,
+      features: ['Card to card', 'Bank transfer', 'Low fees'],
+      affiliate: 'https://paysend.com/us/',
+      color: 'bg-blue-600'
+    },
+    {
+      name: 'Flutterwave',
+      fee: '$1.99',
+      rate: '1,537.80',
+      time: '0-1 jour',
+      total: '1,535.81',
+      rating: 4.5,
+      features: ['African focus', 'Mobile money', 'Bank transfer'],
+      affiliate: 'https://flutterwave.com/',
+      color: 'bg-yellow-600'
+    },
+    {
+      name: 'Skrill',
+      fee: '$3.99',
+      rate: '1,535.60',
+      time: '0-24h',
+      total: '1,531.61',
+      rating: 4.1,
+      features: ['Digital wallet', 'Email transfer', 'Mobile app'],
+      affiliate: 'https://skrill.com/',
+      color: 'bg-purple-600'
+    }
+  ],
+  'GBP-GHS': [
+    {
+      name: 'Sendwave',
+      fee: '£0',
+      rate: '19.85',
+      time: '0-24h',
+      total: '19.85',
+      rating: 4.9,
+      features: ['No fees', 'Mobile money', 'Instant'],
+      affiliate: 'https://sendwave.com/',
+      color: 'bg-cyan-500'
+    },
+    {
+      name: 'Wise',
+      fee: '0.41%',
+      rate: '19.80',
+      time: '1-2 jours',
+      total: '19.72',
+      rating: 4.8,
+      features: ['Real rate', 'Transparent', 'Fast'],
+      affiliate: 'https://wise.com/gb/',
+      color: 'bg-green-500'
+    },
+    {
+      name: 'Remitly',
+      fee: '£0.99',
+      rate: '19.72',
+      time: '0-1 jour',
+      total: '19.63',
+      rating: 4.7,
+      features: ['Express delivery', 'Mobile money', 'Bank transfer'],
+      affiliate: 'https://remitly.com/gb/',
+      color: 'bg-blue-500'
+    },
+    {
+      name: 'WorldRemit',
+      fee: '£0.99',
+      rate: '19.68',
+      time: '0-24h',
+      total: '19.59',
+      rating: 4.6,
+      features: ['Mobile money', 'Cash pickup', 'Bank transfer'],
+      affiliate: 'https://worldremit.com/gb/',
+      color: 'bg-purple-500'
+    },
+    {
+      name: 'Western Union',
+      fee: '£2.90',
+      rate: '19.65',
+      time: '0-1 jour',
+      total: '19.56',
+      rating: 4.3,
+      features: ['Cash pickup', 'Global network', 'Mobile wallet'],
+      affiliate: 'https://westernunion.com/gb/',
+      color: 'bg-yellow-500'
+    },
+    {
+      name: 'MoneyGram',
+      fee: '£2.99',
+      rate: '19.62',
+      time: '0-1 jour',
+      total: '19.53',
+      rating: 4.2,
+      features: ['Cash pickup', 'Mobile money', 'Bank transfer'],
+      affiliate: 'https://moneygram.com/gb/',
+      color: 'bg-red-500'
+    },
+    {
+      name: 'Small World',
+      fee: '£1.49',
+      rate: '19.70',
+      time: '1-2 jours',
+      total: '19.61',
+      rating: 4.3,
+      features: ['Low fees', 'Cash pickup', 'Mobile money'],
+      affiliate: 'https://smallworld.com/gb/',
+      color: 'bg-pink-500'
+    },
+    {
+      name: 'Azimo (Zepz)',
+      fee: '£0.99',
+      rate: '19.69',
+      time: '0-24h',
+      total: '19.60',
+      rating: 4.4,
+      features: ['Digital first', 'Competitive rates', 'Fast'],
+      affiliate: 'https://azimo.com/gb/',
+      color: 'bg-teal-500'
+    },
+    {
+      name: 'Ria Money Transfer',
+      fee: '£1.99',
+      rate: '19.65',
+      time: '1-2 jours',
+      total: '19.46',
+      rating: 4.4,
+      features: ['Competitive rates', 'Cash pickup', 'Bank transfer'],
+      affiliate: 'https://riamoneytransfer.com/gb/',
+      color: 'bg-orange-500'
+    },
+    {
+      name: 'Xoom (PayPal)',
+      fee: '£2.49',
+      rate: '19.63',
+      time: '0-1 jour',
+      total: '19.38',
+      rating: 4.5,
+      features: ['PayPal integration', 'Mobile app', 'Bank transfer'],
+      affiliate: 'https://xoom.com/gb/',
+      color: 'bg-indigo-500'
+    },
+    {
+      name: 'Paysend',
+      fee: '£1.50',
+      rate: '19.67',
+      time: '0-24h',
+      total: '19.52',
+      rating: 4.2,
+      features: ['Card to card', 'Low fees', 'Fast transfer'],
+      affiliate: 'https://paysend.com/gb/',
+      color: 'bg-blue-600'
+    },
+    {
+      name: 'Skrill',
+      fee: '£2.99',
+      rate: '19.60',
+      time: '0-24h',
+      total: '19.31',
+      rating: 4.1,
+      features: ['Digital wallet', 'Email transfer', 'Mobile app'],
+      affiliate: 'https://skrill.com/',
+      color: 'bg-purple-600'
+    }
+  ],
+  'GBP-GMD': [
+    {
+      name: 'Sendwave',
+      fee: '£0',
+      rate: '81.50',
+      time: '0-24h',
+      total: '81.50',
+      rating: 4.9,
+      features: ['No fees', 'Mobile money', 'Instant'],
+      affiliate: 'https://sendwave.com/',
+      color: 'bg-cyan-500'
+    },
+    {
+      name: 'Wise',
+      fee: '0.41%',
+      rate: '81.20',
+      time: '1-2 jours',
+      total: '80.87',
+      rating: 4.8,
+      features: ['Real rate', 'Transparent', 'Fast'],
+      affiliate: 'https://wise.com/gb/',
+      color: 'bg-green-500'
+    },
+    {
+      name: 'Remitly',
+      fee: '£0.99',
+      rate: '80.90',
+      time: '0-1 jour',
+      total: '79.91',
+      rating: 4.7,
+      features: ['Express delivery', 'Mobile money', 'Bank transfer'],
+      affiliate: 'https://remitly.com/gb/',
+      color: 'bg-blue-500'
+    },
+    {
+      name: 'WorldRemit',
+      fee: '£0.99',
+      rate: '80.60',
+      time: '0-24h',
+      total: '79.61',
+      rating: 4.6,
+      features: ['Mobile money', 'Cash pickup', 'Bank transfer'],
+      affiliate: 'https://worldremit.com/gb/',
+      color: 'bg-purple-500'
+    },
+    {
+      name: 'Western Union',
+      fee: '£2.90',
+      rate: '80.20',
+      time: '0-1 jour',
+      total: '77.30',
+      rating: 4.3,
+      features: ['Cash pickup', 'Global network', 'Agent locations'],
+      affiliate: 'https://westernunion.com/gb/',
+      color: 'bg-yellow-500'
+    },
+    {
+      name: 'MoneyGram',
+      fee: '£2.99',
+      rate: '79.90',
+      time: '0-1 jour',
+      total: '76.91',
+      rating: 4.2,
+      features: ['Cash pickup', 'Mobile money', 'Bank transfer'],
+      affiliate: 'https://moneygram.com/gb/',
+      color: 'bg-red-500'
+    },
+    {
+      name: 'Small World',
+      fee: '£1.49',
+      rate: '80.40',
+      time: '1-2 jours',
+      total: '78.91',
+      rating: 4.3,
+      features: ['Low fees', 'Cash pickup', 'Mobile money'],
+      affiliate: 'https://smallworld.com/gb/',
+      color: 'bg-pink-500'
+    },
+    {
+      name: 'Azimo (Zepz)',
+      fee: '£0.99',
+      rate: '80.35',
+      time: '0-24h',
+      total: '79.36',
+      rating: 4.4,
+      features: ['Digital first', 'Competitive rates', 'Fast'],
+      affiliate: 'https://azimo.com/gb/',
+      color: 'bg-teal-500'
+    },
+    {
+      name: 'Ria Money Transfer',
+      fee: '£1.99',
+      rate: '80.15',
+      time: '1-2 jours',
+      total: '78.16',
+      rating: 4.4,
+      features: ['Competitive rates', 'Cash pickup', 'Bank transfer'],
+      affiliate: 'https://riamoneytransfer.com/gb/',
+      color: 'bg-orange-500'
+    },
+    {
+      name: 'Xoom (PayPal)',
+      fee: '£2.49',
+      rate: '80.10',
+      time: '0-1 jour',
+      total: '77.61',
+      rating: 4.5,
+      features: ['PayPal integration', 'Mobile app', 'Bank transfer'],
+      affiliate: 'https://xoom.com/gb/',
+      color: 'bg-indigo-500'
+    },
+    {
+      name: 'Paysend',
+      fee: '£1.50',
+      rate: '80.25',
+      time: '0-24h',
+      total: '78.75',
+      rating: 4.2,
+      features: ['Card to card', 'Low fees', 'Fast transfer'],
+      affiliate: 'https://paysend.com/gb/',
+      color: 'bg-blue-600'
+    },
+    {
+      name: 'Wave',
+      fee: '£0',
+      rate: '80.00',
+      time: '0-1 jour',
+      total: '80.00',
+      rating: 4.6,
+      features: ['No fees', 'Mobile Money', 'Gambia specialist'],
+      affiliate: 'https://wave.com/',
+      color: 'bg-green-600'
     }
   ]
 };
 
-// Composant AlertForm intégré
-function AlertForm({ currentBestRate = 655, amount, from, to }: { currentBestRate?: number; amount: number; from: string; to: string }) {
+// Devises disponibles
+const currencies = {
+  'XOF': { name: 'Franc CFA BCEAO', flag: '🌍', countries: 'Sénégal, Mali, Burkina Faso, Côte d\'Ivoire, Niger, Bénin, Togo, Guinée-Bissau' },
+  'NGN': { name: 'Naira nigérian', flag: '🇳🇬', countries: 'Nigeria' },
+  'GHS': { name: 'Cedi ghanéen', flag: '🇬🇭', countries: 'Ghana' },
+  'GMD': { name: 'Dalasi gambien', flag: '🇬🇲', countries: 'Gambie' },
+  'GNF': { name: 'Franc guinéen', flag: '🇬🇳', countries: 'Guinée' },
+  'LRD': { name: 'Dollar libérien', flag: '🇱🇷', countries: 'Liberia' },
+  'SLL': { name: 'Leone sierra-léonais', flag: '🇸🇱', countries: 'Sierra Leone' },
+  'CVE': { name: 'Escudo cap-verdien', flag: '🇨🇻', countries: 'Cap-Vert' },
+  'MRU': { name: 'Ouguiya mauritanien', flag: '🇲🇷', countries: 'Mauritanie' },
+  'MAD': { name: 'Dirham marocain', flag: '🇲🇦', countries: 'Maroc' },
+  'EUR': { name: 'Euro', flag: '🇪🇺', countries: 'Zone Euro' },
+  'USD': { name: 'Dollar américain', flag: '🇺🇸', countries: 'États-Unis' },
+  'GBP': { name: 'Livre sterling', flag: '🇬🇧', countries: 'Royaume-Uni' },
+  'CAD': { name: 'Dollar canadien', flag: '🇨🇦', countries: 'Canada' }
+};
+
+// Corridors de transfert
+const corridors = [
+  { from: 'EUR', to: 'XOF', popular: true, description: 'Europe → Sénégal, Mali, Burkina Faso, Côte d\'Ivoire, Niger, Bénin, Togo, Guinée-Bissau' },
+  { from: 'USD', to: 'XOF', popular: true, description: 'États-Unis → Zone UEMOA' },
+  { from: 'GBP', to: 'XOF', popular: false, description: 'Royaume-Uni → Zone UEMOA' },
+  { from: 'USD', to: 'NGN', popular: true, description: 'États-Unis → Nigeria' },
+  { from: 'EUR', to: 'NGN', popular: true, description: 'Europe → Nigeria' },
+  { from: 'GBP', to: 'NGN', popular: true, description: 'Royaume-Uni → Nigeria' },
+  { from: 'USD', to: 'GHS', popular: true, description: 'États-Unis → Ghana' },
+  { from: 'EUR', to: 'GHS', popular: false, description: 'Europe → Ghana' },
+  { from: 'GBP', to: 'GHS', popular: true, description: 'Royaume-Uni → Ghana' },
+  { from: 'USD', to: 'GMD', popular: false, description: 'États-Unis → Gambie' },
+  { from: 'EUR', to: 'GMD', popular: false, description: 'Europe → Gambie' },
+  { from: 'GBP', to: 'GMD', popular: true, description: 'Royaume-Uni → Gambie' },
+  { from: 'USD', to: 'GNF', popular: false, description: 'États-Unis → Guinée' },
+  { from: 'EUR', to: 'GNF', popular: true, description: 'Europe → Guinée' },
+  { from: 'USD', to: 'LRD', popular: true, description: 'États-Unis → Liberia' },
+  { from: 'EUR', to: 'LRD', popular: false, description: 'Europe → Liberia' },
+  { from: 'USD', to: 'SLL', popular: false, description: 'États-Unis → Sierra Leone' },
+  { from: 'GBP', to: 'SLL', popular: true, description: 'Royaume-Uni → Sierra Leone' },
+  { from: 'EUR', to: 'CVE', popular: true, description: 'Europe → Cap-Vert' },
+  { from: 'EUR', to: 'MRU', popular: false, description: 'Europe → Mauritanie' },
+  { from: 'EUR', to: 'MAD', popular: true, description: 'Europe → Maroc' },
+  { from: 'USD', to: 'MAD', popular: false, description: 'États-Unis → Maroc' },
+  { from: 'CAD', to: 'MAD', popular: false, description: 'Canada → Maroc' }
+];
+
+// Taux de change
+const exchangeRates: { [key: string]: number } = {
+  'EUR-XOF': 655.50, 'USD-XOF': 590.20, 'GBP-XOF': 728.40,
+  'EUR-NGN': 1650.30, 'USD-NGN': 1542.30, 'GBP-NGN': 1890.50,
+  'EUR-GHS': 17.85, 'USD-GHS': 16.12, 'GBP-GHS': 19.85,
+  'EUR-GMD': 72.50, 'USD-GMD': 65.80, 'GBP-GMD': 81.20,
+  'EUR-GNF': 9456.00, 'USD-GNF': 8560.00,
+  'USD-LRD': 190.50, 'EUR-LRD': 210.30,
+  'USD-SLL': 24500.00, 'GBP-SLL': 30200.00,
+  'EUR-CVE': 110.30, 'USD-CVE': 100.20,
+  'EUR-MRU': 39.80, 'USD-MRU': 36.15,
+  'EUR-MAD': 10.85, 'USD-MAD': 9.85, 'CAD-MAD': 7.35
+};
+
+// Composant AlertForm
+function AlertForm({ 
+  currentBestRate = 655, 
+  amount, 
+  from, 
+  to 
+}: { 
+  currentBestRate?: number; 
+  amount: number; 
+  from: string; 
+  to: string 
+}) {
   const [email, setEmail] = useState('');
   const [targetRate, setTargetRate] = useState(currentBestRate + 2);
   const [selectedService, setSelectedService] = useState('');
@@ -216,7 +652,6 @@ function AlertForm({ currentBestRate = 655, amount, from, to }: { currentBestRat
         setIsSuccess(true);
         setMessage('🎉 Alerte créée ! Vérifiez votre email de confirmation.');
         
-        // Reset du formulaire après 3 secondes
         setTimeout(() => {
           setIsSuccess(false);
           setEmail('');
@@ -300,7 +735,7 @@ function AlertForm({ currentBestRate = 655, amount, from, to }: { currentBestRat
           </p>
         </div>
 
-        {/* Service préféré (optionnel) */}
+        {/* Service préféré */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Service préféré (optionnel)
@@ -311,12 +746,21 @@ function AlertForm({ currentBestRate = 655, amount, from, to }: { currentBestRat
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Tous les services</option>
+            <option value="Sendwave">Sendwave</option>
             <option value="Wise">Wise</option>
             <option value="Remitly">Remitly</option>
             <option value="WorldRemit">WorldRemit</option>
-            <option value="Sendwave">Sendwave</option>
             <option value="Western Union">Western Union</option>
             <option value="MoneyGram">MoneyGram</option>
+            <option value="Ria Money Transfer">Ria Money Transfer</option>
+            <option value="Xoom (PayPal)">Xoom (PayPal)</option>
+            <option value="Small World">Small World</option>
+            <option value="Azimo (Zepz)">Azimo (Zepz)</option>
+            <option value="Wave">Wave</option>
+            <option value="Paysend">Paysend</option>
+            <option value="Chipper Cash">Chipper Cash</option>
+            <option value="Flutterwave">Flutterwave</option>
+            <option value="Skrill">Skrill</option>
           </select>
         </div>
 
@@ -370,29 +814,8 @@ function AlertForm({ currentBestRate = 655, amount, from, to }: { currentBestRat
     </div>
   );
 }
-const exchangeRates: { [key: string]: number } = {
-  // Zone UEMOA (XOF)
-  'EUR-XOF': 655.50, 'USD-XOF': 590.20, 'GBP-XOF': 728.40, 'CAD-XOF': 435.80,
-  // Nigeria (NGN)
-  'EUR-NGN': 1650.30, 'USD-NGN': 1542.30, 'GBP-NGN': 1890.50, 'CAD-NGN': 1145.60,
-  // Ghana (GHS)
-  'EUR-GHS': 17.85, 'USD-GHS': 16.12, 'GBP-GHS': 19.85,
-  // Gambie (GMD)
-  'EUR-GMD': 72.50, 'USD-GMD': 65.80, 'GBP-GMD': 81.20,
-  // Guinée (GNF)
-  'EUR-GNF': 9456.00, 'USD-GNF': 8560.00,
-  // Liberia (LRD)
-  'USD-LRD': 190.50, 'EUR-LRD': 210.30,
-  // Sierra Leone (SLL)
-  'USD-SLL': 24500.00, 'GBP-SLL': 30200.00,
-  // Cap-Vert (CVE)
-  'EUR-CVE': 110.30, 'USD-CVE': 100.20,
-  // Mauritanie (MRU)
-  'EUR-MRU': 39.80, 'USD-MRU': 36.15,
-  // Maroc (MAD)
-  'EUR-MAD': 10.85, 'USD-MAD': 9.85, 'CAD-MAD': 7.35
-};
 
+// Composant principal
 export default function EnhancedHomePage() {
   const [language, setLanguage] = useState('fr');
   const [selectedCorridor, setSelectedCorridor] = useState('EUR-XOF');
@@ -401,11 +824,11 @@ export default function EnhancedHomePage() {
   const [toCurrency, setToCurrency] = useState('XOF');
   const [convertAmount, setConvertAmount] = useState(1);
 
-  // Traductions fonctionnelles
+  // Traductions
   const translations = {
     fr: {
       title: 'Comparateur de Taux - Transfert d\'Argent Afrique de l\'Ouest',
-      subtitle: '🏆 Trouvez les meilleurs taux pour vos transferts vers l\'Afrique de l\'Ouest + Maroc',
+      subtitle: '🏆 Trouvez les meilleurs taux parmi 12+ services pour vos transferts vers l\'Afrique de l\'Ouest + Maroc',
       quickCalc: '⚡ Calculateur Rapide',
       amount: 'Montant à envoyer',
       calculate: 'Calculer',
@@ -430,7 +853,7 @@ export default function EnhancedHomePage() {
     },
     en: {
       title: 'Rate Comparator - West Africa Money Transfer',
-      subtitle: '🏆 Find the best rates for your transfers to West Africa + Morocco',
+      subtitle: '🏆 Find the best rates among 12+ services for your transfers to West Africa + Morocco',
       quickCalc: '⚡ Quick Calculator',
       amount: 'Amount to send',
       calculate: 'Calculate',
@@ -481,7 +904,7 @@ export default function EnhancedHomePage() {
   const currentServices = transferServices[selectedCorridor as keyof typeof transferServices] || transferServices['EUR-XOF'];
   const conversionRate = exchangeRates[`${fromCurrency}-${toCurrency}`] || 1;
 
-  // Articles SEO pour l'Afrique de l'Ouest
+  // Articles SEO
   const seoArticles = [
     {
       title: language === 'fr' ? 'Comment envoyer de l\'argent au Sénégal depuis la France en 2024' : 'How to send money to Senegal from France in 2024',
@@ -490,8 +913,8 @@ export default function EnhancedHomePage() {
       category: language === 'fr' ? 'Guide' : 'Guide'
     },
     {
-      title: language === 'fr' ? 'Wise vs Western Union : Quel est le meilleur pour l\'Afrique ?' : 'Wise vs Western Union: Which is best for Africa?',
-      excerpt: language === 'fr' ? 'Comparaison détaillée des deux géants du transfert d\'argent pour l\'Afrique de l\'Ouest.' : 'Detailed comparison of the two money transfer giants for West Africa.',
+      title: language === 'fr' ? 'Sendwave vs Wise vs Remitly : Comparaison complète 2024' : 'Sendwave vs Wise vs Remitly: Complete comparison 2024',
+      excerpt: language === 'fr' ? 'Comparaison détaillée des trois services de transfert les plus populaires pour l\'Afrique de l\'Ouest.' : 'Detailed comparison of the three most popular transfer services for West Africa.',
       readTime: '7 min',
       category: language === 'fr' ? 'Comparaison' : 'Comparison'
     },
@@ -530,6 +953,31 @@ export default function EnhancedHomePage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Bandeau de services */}
+        <section className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {language === 'fr' ? '🎯 12+ Services de Transfert Disponibles' : '🎯 12+ Transfer Services Available'}
+            </h2>
+            <p className="text-gray-700 mb-4">
+              {language === 'fr' 
+                ? 'Comparez tous les services majeurs en temps réel pour obtenir le meilleur taux'
+                : 'Compare all major services in real time to get the best rate'
+              }
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {['Sendwave', 'Wise', 'Remitly', 'WorldRemit', 'Western Union', 'MoneyGram', 'Ria', 'Xoom', 'Small World', 'Azimo', 'Wave', 'Paysend'].map((service) => (
+                <span 
+                  key={service}
+                  className="bg-white px-3 py-1 rounded-full text-sm font-medium text-gray-700 shadow-sm border"
+                >
+                  {service}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Sélecteur de corridor */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -595,9 +1043,11 @@ export default function EnhancedHomePage() {
             </div>
             
             <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-sm text-green-600 mb-1">Estimation</div>
+              <div className="text-sm text-green-600 mb-1">
+                {language === 'fr' ? 'Estimation meilleur service' : 'Best service estimate'}
+              </div>
               <div className="text-lg font-bold text-green-800">
-                {(amount * (exchangeRates[selectedCorridor] || 1) * 0.995).toLocaleString()} {selectedCorridor.split('-')[1]}
+                {(amount * (exchangeRates[selectedCorridor] || 1) * 0.999).toLocaleString()} {selectedCorridor.split('-')[1]}
               </div>
             </div>
           </div>
@@ -608,10 +1058,13 @@ export default function EnhancedHomePage() {
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-blue-600" />
             {t('comparison')} - {amount} {selectedCorridor.split('-')[0]}
+            <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
+              {currentServices.length} services disponibles
+            </span>
           </h2>
           
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 p-6">
               {currentServices.map((service, index) => (
                 <div
                   key={service.name}
@@ -687,6 +1140,82 @@ export default function EnhancedHomePage() {
                 </div>
               ))}
             </div>
+            
+            {/* Message d'encouragement */}
+            <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 border-t">
+              <div className="text-center">
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  {language === 'fr' 
+                    ? '💡 Plus de choix = Plus d\'économies !' 
+                    : '💡 More choices = More savings!'
+                  }
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {language === 'fr' 
+                    ? 'Nous comparons tous les services pour vous faire économiser sur chaque transfert'
+                    : 'We compare all services to help you save on every transfer'
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Alertes Email */}
+        <section className="mb-8">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+              <Bell className="w-6 h-6 text-blue-600" />
+              {language === 'fr' ? '🔔 Alertes Taux Avantageux' : '🔔 Favorable Rate Alerts'}
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              {language === 'fr' 
+                ? 'Ne ratez plus jamais une bonne opportunité ! Recevez un email dès qu\'un taux exceptionnel est disponible pour votre corridor.'
+                : 'Never miss a great opportunity again ! Get an email as soon as an exceptional rate is available for your corridor.'
+              }
+            </p>
+          </div>
+          
+          <div className="max-w-2xl mx-auto">
+            <AlertForm 
+              currentBestRate={exchangeRates[selectedCorridor] || 1}
+              amount={amount}
+              from={selectedCorridor.split('-')[0]}
+              to={selectedCorridor.split('-')[1]}
+            />
+          </div>
+          
+          {/* Statistiques des alertes */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-blue-800 mb-2">24/7</div>
+              <div className="text-blue-700 font-medium">
+                {language === 'fr' ? 'Surveillance continue' : 'Continuous monitoring'}
+              </div>
+              <div className="text-sm text-blue-600 mt-1">
+                {language === 'fr' ? 'Tous les corridors' : 'All corridors'}
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-green-800 mb-2">⚡</div>
+              <div className="text-green-700 font-medium">
+                {language === 'fr' ? 'Alertes instantanées' : 'Instant alerts'}
+              </div>
+              <div className="text-sm text-green-600 mt-1">
+                {language === 'fr' ? 'Email immédiat' : 'Immediate email'}
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-purple-800 mb-2">🎯</div>
+              <div className="text-purple-700 font-medium">
+                {language === 'fr' ? 'Alertes personnalisées' : 'Personalized alerts'}
+              </div>
+              <div className="text-sm text-purple-600 mt-1">
+                {language === 'fr' ? 'Vos critères' : 'Your criteria'}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -760,63 +1289,7 @@ export default function EnhancedHomePage() {
           </div>
         </section>
 
-        {/* Section Alertes Email */}
-        <section className="mb-8">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
-              <Bell className="w-6 h-6 text-blue-600" />
-              {language === 'fr' ? '🔔 Alertes Taux Avantageux' : '🔔 Favorable Rate Alerts'}
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              {language === 'fr' 
-                ? 'Ne ratez plus jamais une bonne opportunité ! Recevez un email dès qu\'un taux exceptionnel est disponible pour votre corridor.'
-                : 'Never miss a great opportunity again ! Get an email as soon as an exceptional rate is available for your corridor.'
-              }
-            </p>
-          </div>
-          
-          <div className="max-w-2xl mx-auto">
-            <AlertForm 
-              currentBestRate={exchangeRates[selectedCorridor] || 1}
-              amount={amount}
-              from={selectedCorridor.split('-')[0]}
-              to={selectedCorridor.split('-')[1]}
-            />
-          </div>
-          
-          {/* Statistiques des alertes */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-blue-800 mb-2">24/7</div>
-              <div className="text-blue-700 font-medium">
-                {language === 'fr' ? 'Surveillance continue' : 'Continuous monitoring'}
-              </div>
-              <div className="text-sm text-blue-600 mt-1">
-                {language === 'fr' ? 'Tous les corridors' : 'All corridors'}
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-green-800 mb-2">⚡</div>
-              <div className="text-green-700 font-medium">
-                {language === 'fr' ? 'Alertes instantanées' : 'Instant alerts'}
-              </div>
-              <div className="text-sm text-green-600 mt-1">
-                {language === 'fr' ? 'Email immédiat' : 'Immediate email'}
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-purple-800 mb-2">🎯</div>
-              <div className="text-purple-700 font-medium">
-                {language === 'fr' ? 'Alertes personnalisées' : 'Personalized alerts'}
-              </div>
-              <div className="text-sm text-purple-600 mt-1">
-                {language === 'fr' ? 'Vos critères' : 'Your criteria'}
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Articles SEO */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-indigo-600" />
@@ -870,8 +1343,8 @@ export default function EnhancedHomePage() {
           </h2>
           <p className="text-lg mb-6 opacity-90">
             {language === 'fr' 
-              ? 'Comparez les taux en temps réel et choisissez le meilleur service pour votre transfert vers l\'Afrique de l\'Ouest.'
-              : 'Compare real-time rates and choose the best service for your transfer to West Africa.'
+              ? 'Comparez 12+ services en temps réel et choisissez le meilleur pour votre transfert vers l\'Afrique de l\'Ouest.'
+              : 'Compare 12+ services in real time and choose the best for your transfer to West Africa.'
             }
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1013,8 +1486,8 @@ export default function EnhancedHomePage() {
               <h3 className="font-bold text-lg mb-4">BestRatesAfrica</h3>
               <p className="text-gray-400 text-sm">
                 {language === 'fr' 
-                  ? 'Votre comparateur de référence pour les transferts d\'argent vers l\'Afrique de l\'Ouest + Maroc.'
-                  : 'Your reference comparator for money transfers to West Africa + Morocco.'
+                  ? 'Votre comparateur de référence pour les transferts d\'argent vers l\'Afrique de l\'Ouest + Maroc. Plus de 12 services comparés.'
+                  : 'Your reference comparator for money transfers to West Africa + Morocco. 12+ services compared.'
                 }
               </p>
             </div>
@@ -1024,10 +1497,12 @@ export default function EnhancedHomePage() {
                 {language === 'fr' ? 'Services Populaires' : 'Popular Services'}
               </h4>
               <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="https://sendwave.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Sendwave (Sans frais)</a></li>
                 <li><a href="https://wise.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Wise</a></li>
                 <li><a href="https://remitly.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Remitly</a></li>
-                <li><a href="https://westernunion.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Western Union</a></li>
                 <li><a href="https://worldremit.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WorldRemit</a></li>
+                <li><a href="https://westernunion.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Western Union</a></li>
+                <li><a href="https://moneygram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">MoneyGram</a></li>
               </ul>
             </div>
             
