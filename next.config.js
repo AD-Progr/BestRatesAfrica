@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    serverActions: {}          //  ✅ objet vide (plus d’avertissement)
-  }
-};
+const withNextIntl = require('next-intl/plugin')(
+  './i18n.ts'          // ← chemin vers le fichier que nous venons de créer
+  // (Vous pourriez passer un 2ᵉ argument avec des options si besoin)
+);
 
-module.exports = nextConfig;
+module.exports = withNextIntl({
+  experimental: {
+    serverActions: {}  // ⚠️ gardez vos autres options ici
+  }
+});
