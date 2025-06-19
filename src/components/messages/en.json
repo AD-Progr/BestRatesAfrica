@@ -1,0 +1,12 @@
+{
+  "AlertForm": {
+    "title": "Create an alert",
+    "email": "Email address",
+    "threshold": "Minimum rate threshold (%)",
+    "service": "Preferred transfer service",
+    "selectService": "Choose a service",
+    "submit": "Create alert",
+    "success": "Alert created successfully!",
+    "error": "Please fill in all fields correctly"
+  }
+}
