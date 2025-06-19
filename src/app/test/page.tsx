@@ -1,10 +1,8 @@
-import Converter from '@/components/Converter';
-
 export default function TestPage() {
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-center">Test Convertisseur Universel</h1>
-      <Converter />
-    </main>
+    <div>
+      <h1>Test Page</h1>
+      <p>Si vous voyez ceci, Next.js fonctionne !</p>
+    </div>
   );
 }
