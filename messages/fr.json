@@ -1,0 +1,14 @@
+{
+  "greeting": "Bonjour",
+  "rate": "Taux de change",
+  "AlertForm": {
+    "title": "Créer une alerte",
+    "email": "Adresse e-mail",
+    "threshold": "Seuil de taux minimum (%)",
+    "service": "Service de transfert préféré",
+    "selectService": "Choisissez un service",
+    "submit": "Créer l'alerte",
+    "success": "Alerte créée avec succès !",
+    "error": "Veuillez remplir tous les champs correctement"
+  }
+}
