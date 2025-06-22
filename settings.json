@@ -1,0 +1,6 @@
+// .vscode/settings.json  (crée-le si absent)
+{
+  "css.validate": false,
+  "scss.validate": false,
+  "tailwindCSS.emmetCompletions": true
+}

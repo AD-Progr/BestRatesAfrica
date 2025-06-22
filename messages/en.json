@@ -1,6 +1,5 @@
 {
-  "greeting": "Hello",
-  "rate": "Exchange rate",
+  "welcome": "Welcome to BestRates Africa!",
   "AlertForm": {
     "title": "Create an alert",
     "email": "Email address",
@@ -10,5 +9,17 @@
     "submit": "Create alert",
     "success": "Alert created successfully!",
     "error": "Please fill in all fields correctly"
+  },
+  
+  "Nav": {
+    "corridors": "Corridors"
+  },
+  
+  "CorridorFilters": {
+     "waemu":     "WAEMU CFA",
+  "waextra":   "Other West Africa",
+  "anglophone":"Anglophone",
+  "maghreb":   "Maghreb",
+  "all":       "All"
   }
 }

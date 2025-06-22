@@ -1,6 +1,5 @@
 {
-  "greeting": "Bonjour",
-  "rate": "Taux de change",
+  "welcome": "Bienvenue sur BestRates Africa !",
   "AlertForm": {
     "title": "Créer une alerte",
     "email": "Adresse e-mail",
@@ -10,5 +9,17 @@
     "submit": "Créer l'alerte",
     "success": "Alerte créée avec succès !",
     "error": "Veuillez remplir tous les champs correctement"
+  },
+  
+  "Nav": {
+    "corridors": "Corridors"   
+  },
+
+  "CorridorFilters": {
+    "waemu":     "UEMOA (CFA)",
+  "waextra":   "Afrique Ouest hors UEMOA",
+  "anglophone":"Anglophones",
+  "maghreb":   "Maghreb",
+  "all":       "Tous"
   }
 }

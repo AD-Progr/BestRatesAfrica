@@ -1,10 +1,8 @@
 import createIntlMiddleware from 'next-intl/middleware';
+import intlConfig from '../next-intl.config';
 
-export default createIntlMiddleware({
-  locales: ['en', 'fr'],
-  defaultLocale: 'fr'
-});
+export default createIntlMiddleware(intlConfig);
 
 export const config = {
-  matcher: ['/((?!_next|.*\\..*).*)']   // laisse passer les assets (_next, images…)
+  matcher: ['/((?!_next|.*\\..*).*)']   // ignore les assets et API
 };

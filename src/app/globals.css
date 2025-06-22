@@ -1,26 +1,28 @@
-@import "tailwindcss";
+/* === 1. Injection Tailwind ============ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* === 2. Variables couleurs & fontes === */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Mode clair */
+  --color-bg: #ffffff;
+  --color-fg: #171717;
+
+  /* Polices chargées via next/font */
+  --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui);
+  --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Mode sombre (préférence système) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg: #0a0a0a;
+    --color-fg: #ededed;
   }
 }
 
+/* === 3. Styles de base =============== */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply antialiased text-[color:var(--color-fg)] bg-[color:var(--color-bg)] font-sans;
 }
