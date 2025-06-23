@@ -28,37 +28,31 @@ export interface Service {
   /** zones réellement couvertes */
   corridors: Region[];
   /** infos d’affiliation – on les active quand on a le contrat */
-  affiliate?: {
-    /** identifiant de programme (« impact », « cj », « flex », « direct ») */
-    network: 'impact' | 'cj' | 'flex' | 'direct';
+  affiliate: {
+    /** identifiant de programme (« impact », « cj », « flex », «direct ») */
+    network: 'impact' | 'cj' | 'flex' | 'direct' | '';
     /** clé d’ENV à lire ex : WISE_AFFILIATE_ID */
     envKey: string;
   };
 }
 
 /* ---------- Helpers d’affiliation ------------------------- */
-/* construit le lien final (ou null si pas encore d’ID)       */
 export function affiliateLink(s: Service): string | null {
-  if (!s.affiliate) return null;
+  if (!s.affiliate.envKey) return null;
   const id = process.env[s.affiliate.envKey as keyof NodeJS.ProcessEnv];
   if (!id) return null;
-
   switch (s.affiliate.network) {
-    case 'impact':
-      return `https://impact.com/aff?cid=${id}`;
-    case 'cj':
-      return `https://www.anrdoezrs.net/links/${id}/type/dlg/*/${s.website}`;
-    case 'flex':
-      return `https://prf.hn/click/${id}`;
-    case 'direct':
-      return `${s.website}?ref=${id}`;
+    case 'impact': return `https://impact.com/aff?cid=${id}`;
+    case 'cj':     return `https://www.anrdoezrs.net/links/${id}/type/dlg/*/${s.website}`;
+    case 'flex':   return `https://prf.hn/click/${id}`;
+    case 'direct': return `${s.website}?ref=${id}`;
+    default:       return null;
   }
 }
 
 /* ---------- Catalogue ------------------------------------- */
-/* (❗ Ajoute / modifie à volonté — tout est centralisé ici)    */
 export const services: Service[] = [
-  /* ======== B2C / néo-banques ============================= */
+  /* B2C / néo-banques */
   {
     id: 'wise',
     name: 'Wise',
@@ -87,7 +81,7 @@ export const services: Service[] = [
     affiliate: { network: 'impact', envKey: 'WORLDREMIT_AFFILIATE_ID' }
   },
 
-  /* ======== Diaspora-first / fintech Afrique --------------- */
+  /* Diaspora-first */
   {
     id: 'sendwave',
     name: 'Sendwave',
@@ -103,8 +97,8 @@ export const services: Service[] = [
     website: 'https://glocurrency.com',
     logo: '/logos/glocurrency.svg',
     category: 'b2c',
-    corridors: ['anglophone', 'waemu']
-    // pas d’affiliation pour l’instant
+    corridors: ['anglophone', 'waemu'],
+    affiliate: { network: '', envKey: '' }
   },
   {
     id: 'transfergo',
@@ -116,15 +110,15 @@ export const services: Service[] = [
     affiliate: { network: 'cj', envKey: 'TRANSFERGO_AFFILIATE_ID' }
   },
 
-  /* ======== Mobile-Wallet / Cash pick-up ================== */
+  /* Mobile-Wallet */
   {
     id: 'wave',
     name: 'Wave',
     website: 'https://wave.com',
     logo: '/logos/wave.png',
     category: 'mobile-wallet',
-    corridors: ['waemu', 'waextra']
-    // pas d’affiliation
+    corridors: ['waemu', 'waextra'],
+    affiliate: { network: '', envKey: '' }
   },
   {
     id: 'orange-money',
@@ -132,17 +126,19 @@ export const services: Service[] = [
     website: 'https://orange.com',
     logo: '/logos/orange-money.svg',
     category: 'mobile-wallet',
-    corridors: ['waemu', 'waextra', 'maghreb']
+    corridors: ['waemu', 'waextra', 'maghreb'],
+    affiliate: { network: '', envKey: '' }
   },
 
-  /* ======== B2B FX ======================================== */
+  /* B2B FX */
   {
     id: 'flutterwave',
     name: 'Flutterwave',
     website: 'https://flutterwave.com',
     logo: '/logos/flutterwave.svg',
     category: 'b2b',
-    corridors: ['anglophone']
+    corridors: ['anglophone'],
+    affiliate: { network: '', envKey: '' }
   },
   {
     id: 'dlocal',
@@ -150,7 +146,8 @@ export const services: Service[] = [
     website: 'https://dlocal.com',
     logo: '/logos/dlocal.svg',
     category: 'b2b',
-    corridors: ['waemu', 'maghreb']
+    corridors: ['waemu', 'maghreb'],
+    affiliate: { network: '', envKey: '' }
   },
   {
     id: 'currencycloud',
@@ -162,14 +159,15 @@ export const services: Service[] = [
     affiliate: { network: 'direct', envKey: 'CURRENCYCLOUD_AFFILIATE_ID' }
   },
 
-  /* ======== Crypto / Niche ================================ */
+  /* Crypto / Niche */
   {
     id: 'bitmama',
     name: 'Bitmama',
     website: 'https://bitmama.io',
     logo: '/logos/bitmama.svg',
     category: 'crypto',
-    corridors: ['anglophone']
+    corridors: ['anglophone'],
+    affiliate: { network: '', envKey: '' }
   },
   {
     id: 'afriex',
@@ -177,7 +175,8 @@ export const services: Service[] = [
     website: 'https://afriex.app',
     logo: '/logos/afriex.svg',
     category: 'crypto',
-    corridors: ['anglophone']
+    corridors: ['anglophone'],
+    affiliate: { network: '', envKey: '' }
   },
   {
     id: 'bitpesa',
@@ -185,16 +184,18 @@ export const services: Service[] = [
     website: 'https://azafinance.com',
     logo: '/logos/bitpesa.svg',
     category: 'crypto',
-    corridors: ['waemu']
+    corridors: ['waemu'],
+    affiliate: { network: '', envKey: '' }
   },
 
-  /* ======== P2P =========================================== */
+  /* P2P */
   {
     id: 'paxful',
     name: 'Paxful',
     website: 'https://paxful.com',
     logo: '/logos/paxful.svg',
     category: 'p2p',
-    corridors: ['anglophone', 'waextra']
+    corridors: ['anglophone', 'waextra'],
+    affiliate: { network: '', envKey: '' }
   }
 ];
